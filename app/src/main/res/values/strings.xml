@@ -4,17 +4,19 @@
     <string name="app_name">GrooveApp</string>
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section3">Admin Tools</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
+    <string name="action_admin">Admin Tools</string>
     <string name="preference_key_username">com.example.grooveapp.PREFERENCE_KEY_USERNAME</string>
     <string name="preference_key_password">com.example.grooveapp.PREFERENCE_KEY_PASSWORD</string>
     <string name="preference_key_server">com.example.grooveapp.PREFERENCE_KEY_SERVER</string>
     <string name="is_logged_in">com.example.grooveapp.KEY_IS_LOGGED</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_admin">AdminActivity</string>
 
 </resources>

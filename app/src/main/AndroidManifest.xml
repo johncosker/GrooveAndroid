@@ -45,6 +45,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.grooveapp.john.grooveapp.MainActivity" />
         </activity>
+        <activity
+            android:name="com.grooveapp.john.grooveapp.AdminActivity"
+            android:label="@string/title_activity_admin"
+            android:parentActivityName="com.grooveapp.john.grooveapp.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.grooveapp.john.grooveapp.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -141,6 +141,11 @@ public class MainActivity extends Activity
             startActivity(intent);
             return true;
         }
+        if (item.getItemId() == R.id.action_admin) {
+            Intent intent = new Intent(this, AdminActivity.class);
+            startActivity(intent);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

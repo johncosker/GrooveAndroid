@@ -1,6 +1,10 @@
 package com.grooveapp.john.grooveapp;
 
 import android.app.ListActivity;
+import org.json.simple.*;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,12 +18,20 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 
-public class SearchActivity extends ListActivity {
+public class SearchActivity extends ListActivity implements AsyncResponse {
+    private String mUserName;
+    private String mPassword;
+    private String mServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.preference_key_username), MODE_PRIVATE);
+        mUserName = prefs.getString(getString(R.string.preference_key_username), "");
+        mPassword = prefs.getString(getString(R.string.preference_key_password), "");
+        mServer = prefs.getString(getString(R.string.preference_key_server), "");
 
         Button searchButton = (Button) findViewById(R.id.search_button);
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -34,7 +46,13 @@ public class SearchActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         Song item = (Song) getListAdapter().getItem(position);
         String strSong = item.toString();
-        Toast.makeText(this, strSong + " selected", Toast.LENGTH_LONG).show();
+        JSONObject obj = JSONBuilder.buildAddCommand("addSongBySourceType", mUserName, "dataBase", "",
+                item.getId(),
+                item.getArtistID(),
+                item.getName(),
+                item.getAlbum(),
+                item.getArtist());
+        new TCPSender().execute(mServer, obj.toString());
     }
 
 
@@ -63,26 +81,18 @@ public class SearchActivity extends ListActivity {
     public void getSearchResults(){
         EditText searchView = (EditText) findViewById(R.id.search_text);
         String searchText = searchView.getText().toString();
-        Toast.makeText(this, searchText, Toast.LENGTH_LONG).show();
-        ArrayList<Song> songs = new ArrayList<Song>();
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
-        songs.add(new Song("1", "Harder, Better, Faster, Stronger", "Daft Punk", "Discovery", "500", ""));
 
+
+        TCPSender tcpTask = new TCPSender();
+        tcpTask.delegate = this;
+        tcpTask.execute(mServer, JSONBuilder.buildOutCommand("search", mUserName, "search", searchText).toString());
+    }
+
+    @Override
+    public void processFinish(String output) {
+        ArrayList<Song> songs;
+        songs = JSONBuilder.getSongsFromSearch(output);
         SongArrayAdapter adapter = new SongArrayAdapter(this, songs.toArray(new Song[songs.size()]));
         setListAdapter(adapter);
-
     }
 }
