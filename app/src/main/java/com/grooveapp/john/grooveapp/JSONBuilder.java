@@ -69,4 +69,34 @@ public  class JSONBuilder {
 
         return songs;
     }
+
+    public static Song getSong(String jsonStr) {
+        System.out.println(jsonStr);
+        JSONParser parser = new JSONParser();
+        JSONObject obj = null;
+        Song song;
+        try {
+            obj = (JSONObject) parser.parse(jsonStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        assert obj != null;
+        obj = (JSONObject)obj.get("song");
+        String name = "";
+        String artist = "";
+        String album = "";
+        if (obj.get("name") != null) {
+            name = obj.get("name").toString();
+        }
+        if (obj.get("album") != null) {
+            album = obj.get("album").toString();
+        }
+        if (obj.get("artist") != null) {
+            artist = obj.get("artist").toString();
+        }
+        song = new Song("", name, artist, "", album, "", "");
+        System.out.println(song.toString());
+        return song;
+    }
+
 }

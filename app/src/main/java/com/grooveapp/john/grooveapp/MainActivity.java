@@ -18,11 +18,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, AsyncResponse {
     public static final String PREFS_NAME = "UserFile";
     private String mUserName;
     private String mServer;
@@ -61,6 +65,7 @@ public class MainActivity extends Activity
             mUserName = prefs.getString(getString(R.string.preference_key_username), "");
             mPassword = prefs.getString(getString(R.string.preference_key_password), "");
             mServer = prefs.getString(getString(R.string.preference_key_server), "");
+            getCurrentSong();
         }
     }
 
@@ -84,10 +89,6 @@ public class MainActivity extends Activity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
     }
 
     public void onSectionAttached(int number) {
@@ -124,6 +125,27 @@ public class MainActivity extends Activity
         }
         return super.onCreateOptionsMenu(menu);
     }
+    public void getCurrentSong(){
+        TCPSender tcpTask = new TCPSender();
+        tcpTask.delegate = this;
+        tcpTask.execute(mServer, JSONBuilder.buildOutCommand("current", mUserName, "player", "").toString());
+    }
+
+    @Override
+    public void processFinish(String output) {
+        Song song = JSONBuilder.getSong(output);
+
+        TextView name = (TextView)findViewById(R.id.current_name);
+        name.setText(song.getName());
+        TextView artist = (TextView)findViewById(R.id.current_artist);
+        artist.setText(song.getArtist());
+        TextView album = (TextView)findViewById(R.id.current_album);
+        album.setText(song.getAlbum());
+        ImageView image = (ImageView)findViewById(R.id.current_image);
+        //image.setImageURI("http://eofdreams.com/data_images/dreams/cat/cat-05.jpg");
+        new DownloadImageTask(image).execute("http://eofdreams.com/data_images/dreams/cat/cat-05.jpg");
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
