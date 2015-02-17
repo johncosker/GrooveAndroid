@@ -45,7 +45,6 @@ public class SearchActivity extends ListActivity implements AsyncResponse {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         Song item = (Song) getListAdapter().getItem(position);
-        String strSong = item.toString();
         JSONObject obj = JSONBuilder.buildAddCommand("addSongBySourceType", mUserName, "dataBase", "",
                 item.getId(),
                 item.getArtistID(),
@@ -89,7 +88,7 @@ public class SearchActivity extends ListActivity implements AsyncResponse {
     }
 
     @Override
-    public void processFinish(String output) {
+    public void processFinish(String output, String task) {
         ArrayList<Song> songs;
         songs = JSONBuilder.getSongsFromSearch(output);
         SongArrayAdapter adapter = new SongArrayAdapter(this, songs.toArray(new Song[songs.size()]));

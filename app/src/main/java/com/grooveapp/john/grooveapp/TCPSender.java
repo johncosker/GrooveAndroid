@@ -23,8 +23,12 @@ public class TCPSender extends AsyncTask<String, Void, String> {
     private static final int SERVERPORT = 5505;
     public PrintWriter out;
     public BufferedReader in ;
+    public String mTask = "";
 
     protected String doInBackground(String... strings) {
+        if(3 == strings.length){
+            mTask = strings[2];
+        }
         try {
             InetAddress serverAddr = InetAddress.getByName(strings[0]);
             socket = new Socket(serverAddr, SERVERPORT);
@@ -53,6 +57,6 @@ public class TCPSender extends AsyncTask<String, Void, String> {
 
     protected void onPostExecute(String response){
         if(delegate != null)
-            delegate.processFinish(response);
+            delegate.processFinish(response, mTask);
     }
 }

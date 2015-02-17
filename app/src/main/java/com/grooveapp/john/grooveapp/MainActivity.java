@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,7 +26,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 
-public class MainActivity extends Activity
+public class MainActivity extends ListActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, AsyncResponse {
     public static final String PREFS_NAME = "UserFile";
     private String mUserName;
@@ -66,6 +67,7 @@ public class MainActivity extends Activity
             mPassword = prefs.getString(getString(R.string.preference_key_password), "");
             mServer = prefs.getString(getString(R.string.preference_key_server), "");
             getCurrentSong();
+            getSongsDb();
         }
     }
 
@@ -128,22 +130,42 @@ public class MainActivity extends Activity
     public void getCurrentSong(){
         TCPSender tcpTask = new TCPSender();
         tcpTask.delegate = this;
-        tcpTask.execute(mServer, JSONBuilder.buildOutCommand("current", mUserName, "player", "").toString());
+        tcpTask.execute(mServer, JSONBuilder.buildOutCommand("current", mUserName, "player", "").toString(), "current_song");
     }
 
     @Override
-    public void processFinish(String output) {
-        Song song = JSONBuilder.getSong(output);
+    public void processFinish(String output, String task) {
+        if (task.equals("current_song")) {
+            Song song = JSONBuilder.getSong(output);
 
-        TextView name = (TextView)findViewById(R.id.current_name);
-        name.setText(song.getName());
-        TextView artist = (TextView)findViewById(R.id.current_artist);
-        artist.setText(song.getArtist());
-        TextView album = (TextView)findViewById(R.id.current_album);
-        album.setText(song.getAlbum());
-        ImageView image = (ImageView)findViewById(R.id.current_image);
-        //image.setImageURI("http://eofdreams.com/data_images/dreams/cat/cat-05.jpg");
-        new DownloadImageTask(image).execute("http://eofdreams.com/data_images/dreams/cat/cat-05.jpg");
+            TextView name = (TextView) findViewById(R.id.current_name);
+            name.setText(song.getName());
+            TextView artist = (TextView) findViewById(R.id.current_artist);
+            artist.setText(song.getArtist());
+            TextView album = (TextView) findViewById(R.id.current_album);
+            album.setText(song.getAlbum());
+            ImageView image = (ImageView) findViewById(R.id.current_image);
+            new DownloadImageTask(image).execute("http://eofdreams.com/data_images/dreams/cat/cat-05.jpg");
+        }
+        else if (task.equals("show_db")){
+            ArrayList<DatabaseSong> songs;
+            songs = JSONBuilder.getSongsFromDb(output);
+            DatabaseSongArrayAdapter adapter = new DatabaseSongArrayAdapter(this, songs.toArray(new DatabaseSong[songs.size()]));
+            setListAdapter(adapter);
+        }
+    }
+
+    public void getSongsDb(){
+        TCPSender tcpTask = new TCPSender();
+        tcpTask.delegate = this;
+        tcpTask.execute(mServer, JSONBuilder.buildOutCommand("showdb", mUserName, "dataBase", "").toString(), "show_db");
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        getCurrentSong();
+        getSongsDb();
     }
 
 

@@ -19,7 +19,13 @@ public class Song implements Parcelable {
     private String mSongID;
     private String mArtistID;
 
-    public Song(String id, String name, String artist, String artistId, String album, String length, String thumb) {
+    public Song(String id,
+                String name,
+                String artist,
+                String artistId,
+                String album,
+                String length,
+                String thumb) {
         mId = id;
         mName = name;
         mAlbum = album;

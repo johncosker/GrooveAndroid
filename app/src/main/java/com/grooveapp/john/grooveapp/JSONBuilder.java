@@ -69,6 +69,37 @@ public  class JSONBuilder {
 
         return songs;
     }
+    //TODO: Standardize with search result format and remove redundant function
+    //TODO: Make db return more info on song
+    public static ArrayList<DatabaseSong> getSongsFromDb(String jsonStr){
+        System.out.print("Songs data: ");
+        System.out.println(jsonStr);
+        JSONParser parser = new JSONParser();
+        JSONObject obj = null;
+        JSONObject jsonSong = null;
+        ArrayList<DatabaseSong> songs = new ArrayList<DatabaseSong>();
+        DatabaseSong song;
+        try {
+            obj = (JSONObject) parser.parse(jsonStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        JSONArray songList = (JSONArray) obj.get("songs");
+        for(int i = 0; i < songList.size(); i++){
+            jsonSong = (JSONObject) songList.get(i);
+            String name = jsonSong.get("name").toString();
+            //String album = jsonSong.get("album").toString();
+            String artist = jsonSong.get("artist").toString();
+            int votes = Integer.parseInt(jsonSong.get("votes").toString());
+            //String id = jsonSong.get("SongID").toString();
+            //String artistId = jsonSong.get("ArtistID").toString();
+            song = new DatabaseSong("", name, artist, "", "", "", "", votes);
+            songs.add(song);
+            System.out.println(song.toString());
+        }
+
+        return songs;
+    }
 
     public static Song getSong(String jsonStr) {
         System.out.println(jsonStr);
